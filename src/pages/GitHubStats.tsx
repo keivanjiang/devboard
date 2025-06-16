@@ -5,19 +5,25 @@ import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Tooltip, Legend } from 'chart.js';
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
+const DEFAULT_USER = 'keivanjiang'; //thats me!
+
 function GitHubStats() {
   const [username, setUsername] = useState('');
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState('');
   const [repos, setRepos] = useState<any[]>([]);
+  useEffect(() => {
+    setUsername(DEFAULT_USER);
+    fetchGitHubData(DEFAULT_USER);
+  },[]);
 
-  const fetchGitHubData = async () => {
+  const fetchGitHubData = async (user: string = username) => {
     try {
-      const res = await fetch(`https://api.github.com/users/${username}`);
+      const res = await fetch(`https://api.github.com/users/${user}`);
       if (!res.ok) throw new Error('User not found');
       const json = await res.json();
       setData(json);
-      const reposRes = await fetch(`https://api.github.com/users/${username}/repos`);
+      const reposRes = await fetch(`https://api.github.com/users/${user}/repos`);
       const reposJson = await reposRes.json();
       setRepos(reposJson);
       setError('');
@@ -63,7 +69,7 @@ function GitHubStats() {
         value={username}
         onChange={(e) => setUsername(e.target.value)}
       />
-      <button onClick={fetchGitHubData}>Fetch</button>
+      <button onClick= {() => fetchGitHubData()}>Fetch</button>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
 

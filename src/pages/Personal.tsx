@@ -20,6 +20,9 @@ function Personal() {
 
       <h3>📸 Just for Fun</h3>
       <p>New gear, my setup at home, stuff ive modded, or just my cat being sill- add a gallery later </p>
+
+      <h3>Recent Stuff/Reviews?</h3>
+      <p> Latest game or movie</p>
     </div>
   );
 }
