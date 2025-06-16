@@ -12,10 +12,11 @@ function GitHubStats() {
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState('');
   const [repos, setRepos] = useState<any[]>([]);
+  const [commits, setCommits] = useState<any[]>([]);
   useEffect(() => {
     setUsername(DEFAULT_USER);
     fetchGitHubData(DEFAULT_USER);
-  },[]);
+  }, []);
 
   const fetchGitHubData = async (user: string = username) => {
     try {
@@ -26,12 +27,22 @@ function GitHubStats() {
       const reposRes = await fetch(`https://api.github.com/users/${user}/repos`);
       const reposJson = await reposRes.json();
       setRepos(reposJson);
+      //Find most-starred repo (or first repo)
+      const topRepo = reposJson.sort((a: any, b: any) => b.stargazers_count - a.stargazers_count)[0];
+      if (topRepo) {
+        const commitsRes = await fetch(`https://api.github.com/repos/${user}/${topRepo.name}/commits?per_page=5`);
+        const commitsJson = await commitsRes.json();
+        setCommits(commitsJson);
+      }
+
       setError('');
     } catch (err: any) {
       setData(null);
       setError(err.message);
     }
   };
+
+
 
   const languageCount: Record<string, number> = {};
   repos.forEach((repo) => {
@@ -69,31 +80,38 @@ function GitHubStats() {
         value={username}
         onChange={(e) => setUsername(e.target.value)}
       />
-      <button onClick= {() => fetchGitHubData()}>Fetch</button>
+      <button onClick={() => fetchGitHubData()}>Fetch</button>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
       {data && (
         <div style={{ marginTop: '1rem' }}>
+          {/* Profile Info */}
           <img src={data.avatar_url} alt="avatar" width={100} />
           <h2>{data.name || data.login}</h2>
           <p>{data.bio}</p>
           <p>Public Repos: {data.public_repos}</p>
           <p>Followers: {data.followers}</p>
           <p>Following: {data.following}</p>
-          <a href={data.html_url} target="_blank">View Profile</a>
+          <a href={data.html_url} target="_blank" rel="noreferrer">View Profile</a>
+
+          {/* Repo List */}
           {repos.length > 0 && (
-            <div>
+            <div style={{ marginTop: '1rem' }}>
               <h3>Repositories:</h3>
               <ul>
                 {repos.map((r) => (
                   <li key={r.id}>
-                    <a href={r.html_url} target="_blank">{r.name}</a> – ⭐{r.stargazers_count}
+                    <a href={r.html_url} target="_blank" rel="noreferrer">
+                      {r.name}
+                    </a> – ⭐{r.stargazers_count}
                   </li>
                 ))}
               </ul>
             </div>
           )}
+
+          {/* Chart */}
           {repos.length > 0 && (
             <div style={{ marginTop: '2rem' }}>
               <h3>Language Breakdown:</h3>
@@ -101,9 +119,24 @@ function GitHubStats() {
             </div>
           )}
 
+          {/*Recent Commits */}
+          {commits.length > 0 && (
+            <div style={{ marginTop: '2rem' }}>
+              <h3>Recent Commits:</h3>
+              <ul>
+                {commits.map((c) => (
+                  <li key={c.sha} style={{ marginBottom: '1rem' }}>
+                    <strong>{c.commit.author.name}</strong>: {c.commit.message.split('\n')[0]}
+                    <br />
+                    <small>{new Date(c.commit.author.date).toLocaleString()}</small>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
-
       )}
+
     </div>
 
   );
