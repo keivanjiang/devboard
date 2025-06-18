@@ -14,6 +14,8 @@ function Layout() {
           <li><Link to="/blog">Blog</Link></li>
           <li><Link to="/jobs">Jobs</Link></li>
           <li><Link to="/personal">Personal</Link></li>
+          <li><Link to="/playground">Playground</Link></li>
+
         </ul>
       </nav>
 

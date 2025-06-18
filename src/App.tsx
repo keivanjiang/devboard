@@ -7,6 +7,8 @@ import Kanban from './pages/Kanban';
 import Blog from './pages/Blog';
 import Jobs from './pages/Jobs';
 import Personal from './pages/Personal';
+import Playground from './pages/Playground';
+
 
 
 function App() {
@@ -20,6 +22,8 @@ function App() {
         <Route path="blog" element={< Blog />} />
         <Route path="jobs" element={<Jobs />} />
         <Route path="personal" element={<Personal/>}/>
+        <Route path="playground" element={<Playground />} />
+
       </Route> 
     </Routes>
   );
