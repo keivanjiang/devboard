@@ -1,6 +1,11 @@
+import PageTitle from '../components/PageTitle';
+
+
 function Personal() {
   return (
     <div>
+            <PageTitle title="Personal" />
+
       <h1>About Me</h1>
       <p>Here's a peek at life outside the code...</p>
 

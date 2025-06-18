@@ -1,4 +1,5 @@
 //imports
+import PageTitle from '../components/PageTitle';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
@@ -72,6 +73,7 @@ function GitHubStats() {
 
   return (
     <div>
+      <PageTitle title="GitHub Stats" />
       <h1>GitHub Stats</h1>
 
       <input
