@@ -54,7 +54,7 @@ export default function Blog() {
   return (
     <div>
       <PageTitle title="Blog" />
-      <h1>📝 DevBoard Blog</h1>
+      <h1>DevBoard Blog</h1>
 
       {user && (
         <div style={{ marginTop: '2rem' }}>
