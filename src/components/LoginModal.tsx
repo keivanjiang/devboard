@@ -12,8 +12,12 @@ export default function LoginModal({ onClose }: Props) {
   const [error, setError] = useState('');
 
   const handleLogin = async () => {
+      console.log('Attempting login...');
+
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+    const result = await signInWithEmailAndPassword(auth, email, password);
+          console.log('Login result:', result.user);
+
       onClose(); // Close modal after successful login
     } catch (err: any) {
       setError('Login failed. Check your email and password.');
