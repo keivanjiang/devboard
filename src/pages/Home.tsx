@@ -1,5 +1,7 @@
 import PageTitle from '../components/PageTitle';
 import CreateNote from '../components/CreateNote';
+import ListNotes from '../components/ListNotes';
+
 
 
 function Home() {
@@ -13,6 +15,7 @@ function Home() {
       <div>
         <h4>Notes</h4>
         <CreateNote />
+        <ListNotes />
       </div>
     </div>
   );

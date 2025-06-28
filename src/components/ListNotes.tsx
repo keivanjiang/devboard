@@ -1,31 +1,50 @@
-import { useEffect, useState } from 'react'; // React hooks
-import { collection, getDocs } from 'firebase/firestore'; // Firestore methods
-import { db } from '../firebase'; // Firebase config
+// src/components/ListNotes.tsx
+import { useState, useEffect } from 'react'; // 🔹 React hooks
+import { db } from '../firebase'; // 🔹 Firebase config
+import { collection, getDocs, query, orderBy } from 'firebase/firestore'; // 🔹 Firestore methods
 
-function ListNotes() {
-  const [notes, setNotes] = useState<any[]>([]); // 🔹 Store notes in state
+type Note = { id: string; content: string }; // 🔹 Basic Note type
+
+export default function ListNotes() {
+  const [notes, setNotes] = useState<Note[]>([]); // 🔹 Store saved notes
+  const [currentIndex, setCurrentIndex] = useState(0); // 🔹 Track visible note
 
   useEffect(() => {
-    // 🔹 Define and immediately invoke an async function
-    const fetchNotes = async () => {
-      const notesSnapshot = await getDocs(collection(db, 'notes')); // 🔹 Get all notes
-      const notesData = notesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); // 🔹 Convert to array
-      setNotes(notesData); // 🔹 Store in state
-    };
+    async function fetchNotes() {
+      const q = query(collection(db, 'notes'), orderBy('createdAt', 'desc'));
+      const snap = await getDocs(q);
+      const arr = snap.docs.map(doc => ({ id: doc.id, ...(doc.data() as any) }));
+      setNotes(arr);
 
-    fetchNotes(); // 🔹 Call the fetch function
+      const stored = localStorage.getItem('currentNoteIndex');
+      if (stored !== null && !isNaN(+stored) && +stored < arr.length) {
+        setCurrentIndex(+stored);
+      }
+    }
+    fetchNotes();
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('currentNoteIndex', currentIndex.toString());
+  }, [currentIndex, notes.length]);
+
+  function prevNote() {
+    if (currentIndex > 0) setCurrentIndex(ci => ci - 1);
+  }
+
+  function nextNote() {
+    if (currentIndex < notes.length - 1) setCurrentIndex(ci => ci + 1);
+  }
+
+  if (notes.length === 0) return <p>No notes yet.</p>;
 
   return (
     <div>
-      <h3>Saved Notes</h3>
-      {notes.map((note) => (
-        <div key={note.id} style={{ marginBottom: '1rem', borderBottom: '1px solid #ccc' }}>
-          <pre>{note.content}</pre> {/* 🔹 Display content */}
-        </div>
-      ))}
+      <button onClick={prevNote}>←</button>
+      <button onClick={nextNote}>→</button>
+      <pre style={{ border: '1px solid #ccc', padding: '1rem' }}>
+        {notes[currentIndex].content}
+      </pre>
     </div>
   );
 }
-
-export default ListNotes;
